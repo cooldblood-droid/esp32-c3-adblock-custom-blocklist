@@ -1,0 +1,57 @@
+name: Build and publish custom blocklist
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "27 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: custom-blocklist-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build from current upstream lists
+        run: |
+          python3 tools/build_blocklist.py blocklist.bin \
+            https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
+            https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt \
+            https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/native.lgwebos-onlydomains.txt \
+            https://easylist-downloads.adblockplus.org/easylistportuguese.txt \
+            data/easylistportuguese_dns.txt
+
+      - name: Check that the list fits the ESP32 partition
+        id: size
+        run: |
+          size=$(stat -c%s blocklist.bin)
+          test $((size % 5)) -eq 0
+          entries=$((size / 5))
+          test "$entries" -ge 200000
+          test "$size" -lt 1300000
+          echo "entries=$entries" >> "$GITHUB_OUTPUT"
+          echo "Built **$entries domain hashes** ($size bytes)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the stable release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          entries='${{ steps.size.outputs.entries }}'
+          notes="Daily custom build — ${entries} domain hashes. Sources: StevenBlack, HaGeZi Pro, HaGeZi LG webOS, EasyList Portuguese and the curated local domains."
+          if gh release view blocklist >/dev/null 2>&1; then
+            gh release edit blocklist --title "Custom DNS blocklist" --notes "$notes"
+          else
+            gh release create blocklist --title "Custom DNS blocklist" --notes "$notes" --latest=false
+          fi
+          gh release upload blocklist blocklist.bin --clobber
