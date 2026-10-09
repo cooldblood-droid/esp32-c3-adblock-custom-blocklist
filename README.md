@@ -1,6 +1,6 @@
 # Lista personalizada do ESP32-C3 AdBlock
 
-Este repositório monta um arquivo blocklist.bin no formato que o firmware do ESP32-C3 aceita e publica o arquivo em uma release do GitHub.
+Este repositório monta um arquivo blocklist.bin no formato que o firmware do ESP32-C3 aceita e publica o arquivo em uma release e em uma URL Raw estável do GitHub.
 
 ## Fontes incluídas
 
@@ -18,7 +18,7 @@ O GitHub Actions recompila diariamente às 04:27 UTC e também pode ser iniciado
 
 Depois de publicar este repositório como público e executar a ação uma vez, configure na placa:
 
-- URL: https://github.com/cooldblood-droid/esp32-c3-adblock-custom-blocklist/releases/download/blocklist/blocklist.bin
+- URL: https://raw.githubusercontent.com/cooldblood-droid/esp32-c3-adblock-custom-blocklist/latest/blocklist.bin
 - Intervalo: 24 horas
 
 Este será o endereço do repositório. A placa busca o bin diariamente; não coloque os links txt do HaGeZi diretamente no painel.
