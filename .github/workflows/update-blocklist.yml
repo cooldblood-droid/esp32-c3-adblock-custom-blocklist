@@ -55,3 +55,20 @@ jobs:
             gh release create blocklist --title "Custom DNS blocklist" --notes "$notes" --latest=false
           fi
           gh release upload blocklist blocklist.bin --clobber
+
+      - name: Publish a direct Raw download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          temp_dir=$(mktemp -d)
+          trap 'rm -rf "$temp_dir"' EXIT
+          cd "$temp_dir"
+          git init -b latest
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp "$GITHUB_WORKSPACE/blocklist.bin" ./blocklist.bin
+          git add blocklist.bin
+          git commit -m "Update blocklist.bin"
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          auth_header=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.extraheader="AUTHORIZATION: basic $auth_header" push --force origin HEAD:latest
