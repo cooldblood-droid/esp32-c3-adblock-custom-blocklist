@@ -4,7 +4,6 @@ Este repositório monta um arquivo blocklist.bin no formato que o firmware do ES
 
 ## Fontes incluídas
 
-- StevenBlack hosts (base de anúncios e malware)
 - HaGeZi Multi Pro, formato de domínios
 - HaGeZi Native LG webOS, formato de domínios
 - EasyList Portuguese; o compilador só aproveita regras por domínio que podem ser expressas por DNS
