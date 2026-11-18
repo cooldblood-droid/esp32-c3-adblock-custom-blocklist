@@ -26,7 +26,6 @@ jobs:
       - name: Build from current upstream lists
         run: |
           python3 tools/build_blocklist.py blocklist.bin \
-            https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
             https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt \
             https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/native.lgwebos-onlydomains.txt \
             https://easylist-downloads.adblockplus.org/easylistportuguese.txt \
@@ -48,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           entries='${{ steps.size.outputs.entries }}'
-          notes="Daily custom build — ${entries} domain hashes. Sources: StevenBlack, HaGeZi Pro, HaGeZi LG webOS, EasyList Portuguese and the curated local domains."
+          notes="Daily custom build — ${entries} domain hashes. Sources: HaGeZi Pro, HaGeZi LG webOS, EasyList Portuguese and the curated local domains."
           if gh release view blocklist >/dev/null 2>&1; then
             gh release edit blocklist --title "Custom DNS blocklist" --notes "$notes"
           else
