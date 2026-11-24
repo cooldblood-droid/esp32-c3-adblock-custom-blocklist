@@ -19,3 +19,6 @@ tech-solution-blog.com
 tradertimerz.media
 xad.dnoticias.pt
 zcp.zwame.pt
+
+# Allow Mercado Livre storefront
+@@||mercadolivre.com.br^
